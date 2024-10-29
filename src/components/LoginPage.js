@@ -14,6 +14,10 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const handleRegisterClick = () => {
+    navigate("/register"); // go to register page.
+  };  
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
@@ -154,7 +158,12 @@ const LoginPage = () => {
             >
               Forgot your password?
             </a>
+            <hr className="my-4 border-gray-200" />
+            <button onClick={handleRegisterClick}>Register</button> {/* register button */}
           </div>
+
+          
+
         </Card>
       </motion.div>
     </div>
