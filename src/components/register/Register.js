@@ -1,62 +1,97 @@
-import React, { useState } from 'react';
-import './Register.css';
+import React, { useState } from "react";
+import axios from "axios";
+import "../../css/Register.css";
 
 const Register = () => {
   // Estados para los campos del formulario
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [userName, setUserName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   // Función para manejar el envío del formulario
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     // Validación básica
-    if (!username || !email || !password) {
-      setError('Todos los campos son obligatorios');
+    if (!userName || !email || !password) {
+      setError("Todos los campos son obligatorios");
       return;
     }
 
-    setError(''); // Limpiamos el mensaje de error si todos los campos están llenos
+    setError(""); // Limpiamos el mensaje de error si todos los campos están llenos
 
+    // axios.post(
+    //   "http://localhost:3001/api/register/submit",
+    //   userName,
+    //   firstName,
+    //   lastName,
+    //   email,
+    //   password
+    // );
     // Aquí podrías agregar la lógica para enviar los datos al servidor
-    console.log('Datos de registro:', { username, email, password });
+    console.log("Datos de registro:", {
+      userName,
+      firstName,
+      lastName,
+      email,
+      password,
+    });
   };
 
   return (
     <div className="register-container">
-      <h2>Registro</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <h2>Register</h2>
+      {error && <p style={{ color: "red" }}>{error}</p>}
       <form onSubmit={handleSubmit}>
         <div>
-          <label>Nombre de usuario:</label>
+          <label>User Name:</label>
           <input
             type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Ingresa tu nombre de usuario"
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+            placeholder="Enter user Name"
           />
         </div>
         <div>
-          <label>Correo electrónico:</label>
+          <label>First Name:</label>
+          <input
+            type="text"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            placeholder="Enter first name"
+          />
+        </div>
+        <div>
+          <label>Last Name:</label>
+          <input
+            type="text"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            placeholder="Enter last name"
+          />
+        </div>
+        <div>
+          <label>Email:</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Ingresa tu correo electrónico"
+            placeholder="Enter Email"
           />
         </div>
         <div>
-          <label>Contraseña:</label>
+          <label>Password:</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Ingresa tu contraseña"
+            placeholder="Enter Password"
           />
         </div>
-        <button type="submit">Registrarse</button>
+        <button type="submit">Register</button>
       </form>
     </div>
   );
