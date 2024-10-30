@@ -20,25 +20,23 @@ const Register = () => {
       setError("Todos los campos son obligatorios");
       return;
     }
-
     setError(""); // Limpiamos el mensaje de error si todos los campos están llenos
 
-    // axios.post(
-    //   "http://localhost:3001/api/register/submit",
-    //   userName,
-    //   firstName,
-    //   lastName,
-    //   email,
-    //   password
-    // );
-    // Aquí podrías agregar la lógica para enviar los datos al servidor
-    console.log("Datos de registro:", {
-      userName,
-      firstName,
-      lastName,
-      email,
-      password,
-    });
+    axios
+      .post("http://localhost/api/Register/submit", {
+        userName,
+        firstName,
+        lastName,
+        email,
+        password,
+      })
+      .then((response) => {
+        console.log("Register success", response.data);
+      })
+      .catch((error) => {
+        console.error("Register error", error);
+        setError("Error al registrar el usuario");
+      });
   };
 
   return (
