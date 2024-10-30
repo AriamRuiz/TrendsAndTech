@@ -23,7 +23,7 @@ const Register = () => {
     setError(""); // Limpiamos el mensaje de error si todos los campos están llenos
 
     axios
-      .post("http://localhost/api/Register/submit", {
+      .post("http://localhost/api/Register", {
         userName,
         firstName,
         lastName,
@@ -36,6 +36,11 @@ const Register = () => {
       .catch((error) => {
         console.error("Register error", error);
         setError("Error al registrar el usuario");
+        if (error.response && error.response.data) {
+          setError(error.response.data.message); // Mensaje específico del backend
+        } else {
+          setError("Error al registrar el usuario");
+        }
       });
   };
 
@@ -51,6 +56,7 @@ const Register = () => {
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
             placeholder="Enter user Name"
+            required
           />
         </div>
         <div>
@@ -60,6 +66,7 @@ const Register = () => {
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
             placeholder="Enter first name"
+            required
           />
         </div>
         <div>
@@ -69,6 +76,7 @@ const Register = () => {
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
             placeholder="Enter last name"
+            required
           />
         </div>
         <div>
@@ -87,6 +95,7 @@ const Register = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Enter Password"
+            required
           />
         </div>
         <button type="submit">Register</button>

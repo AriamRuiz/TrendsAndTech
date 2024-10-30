@@ -6,6 +6,7 @@ import { Book } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Mail, Lock } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -16,7 +17,7 @@ const LoginPage = () => {
 
   const handleRegisterClick = () => {
     navigate("/register"); // go to register page.
-  };  
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -152,18 +153,16 @@ const LoginPage = () => {
           </form>
 
           <div className="mt-6 text-center">
-            <a
-              href="/forgot-password"
+            <Link
+              to="/forgot-password"
               className="text-sm text-blue-600 hover:text-blue-800 transition duration-200"
             >
               Forgot your password?
-            </a>
+            </Link>
             <hr className="my-4 border-gray-200" />
-            <button onClick={handleRegisterClick}>Register</button> {/* register button */}
+            <button onClick={handleRegisterClick}>Register</button>{" "}
+            {/* register button */}
           </div>
-
-          
-
         </Card>
       </motion.div>
     </div>
