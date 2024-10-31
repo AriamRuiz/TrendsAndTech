@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import Card from "../components/ui/Card";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
-import { Book } from "lucide-react";
+import { Book, Mail, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Mail, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -14,6 +14,8 @@ const LoginPage = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleRegisterClick = () => {
     navigate("/register"); // go to register page.
@@ -25,24 +27,19 @@ const LoginPage = () => {
     setIsLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      if (email === "admin@gmail.com" && password === "password") {
-        // Successful login
-        console.log("Login successful");
-        navigate("/library"); // Redirect to LibraryPage
-      } else {
-        setError("Invalid username or password");
-      }
-    } catch (err) {
-      setError("An unexpected error occurred. Please try again.");
+      const response = await axios.post("http://localhost/api/LoginPage", {
+        email,
+        password,
+      });
+      console.log("Login successful", response.data);
+      window.location.href = "/library"; // Redirigir al dashboard
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("Invalid email or password. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
-
-  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -168,4 +165,5 @@ const LoginPage = () => {
     </div>
   );
 };
+
 export default LoginPage;
