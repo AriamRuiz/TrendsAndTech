@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import Search from "./search"; // Assuming this component exists
+import Borrow from "./borrow/Borrow"; // Correct path for Borrow
+import Return from "./return/Return"; // Correct path for Return
 
 const LibraryPage = () => {
   const [books, setBooks] = useState([
@@ -7,39 +10,49 @@ const LibraryPage = () => {
       title: "The Great Gatsby",
       author: "F. Scott Fitzgerald",
       year: 1925,
+      image: "/images/gatsby.jpg",
+      isBorrowed: false,
     },
-    { id: 2, title: "1984", author: "George Orwell", year: 1949 },
+    {
+      id: 2,
+      title: "Absalom",
+      author: "William Faulkner",
+      year: 1949,
+      image: "/images/absalom.jpg",
+      isBorrowed: false,
+    },
   ]);
 
   const [formData, setFormData] = useState({
     title: "",
     author: "",
     year: "",
+    image: "",
   });
-
   const [editingId, setEditingId] = useState(null);
-  const [error, setError] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredBooks, setFilteredBooks] = useState(books);
+  const [searchResults, setSearchResults] = useState([]); // New state for search results
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData({ ...formData, [name]: value });
   };
 
   const addBook = () => {
-    if (!formData.title || !formData.author || !formData.year) {
-      setError("All fields are required");
-      return;
-    }
-    const newBook = {
-      id: books.length ? Math.max(...books.map((b) => b.id)) + 1 : 1,
-      ...formData,
-    };
-    setBooks((prev) => [...prev, newBook]);
-    setFormData({ title: "", author: "", year: "" });
-    setError("");
+    const newBook = { ...formData, id: Date.now(), isBorrowed: false };
+    setBooks([...books, newBook]);
+    setFormData({ title: "", author: "", year: "", image: "" });
+  };
+
+  const updateBook = () => {
+    setBooks((prevBooks) =>
+      prevBooks.map((book) =>
+        book.id === editingId ? { ...formData, id: editingId } : book
+      )
+    );
+    setFormData({ title: "", author: "", year: "", image: "" });
+    setEditingId(null);
   };
 
   const startEditing = (book) => {
@@ -48,22 +61,46 @@ const LibraryPage = () => {
       title: book.title,
       author: book.author,
       year: book.year,
+      image: book.image,
     });
   };
 
-  const updateBook = () => {
-    setBooks((prev) =>
-      prev.map((book) =>
-        book.id === editingId ? { ...book, ...formData } : book
-      )
-    );
-    setEditingId(null);
-    setFormData({ title: "", author: "", year: "" });
-    setError("");
+  const deleteBook = (id) => {
+    setBooks(books.filter((book) => book.id !== id));
   };
 
-  const deleteBook = (id) => {
-    setBooks((prev) => prev.filter((book) => book.id !== id));
+  const handleSearch = () => {
+    if (searchQuery) {
+      const results = books.filter((book) =>
+        book.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredBooks(results);
+      // Set search results with availability status
+      setSearchResults(
+        results.map((book) => ({
+          title: book.title,
+          isAvailable: !book.isBorrowed,
+        }))
+      );
+    } else {
+      setFilteredBooks(books);
+      setSearchResults([]); // Clear results if no query
+    }
+  };
+  const returnBook = (id) => {
+    setBooks(
+      books.map((book) =>
+        book.id === id ? { ...book, isBorrowed: false } : book
+      )
+    );
+  };
+
+  const borrowBook = (id) => {
+    setBooks(
+      books.map((book) =>
+        book.id === id ? { ...book, isBorrowed: true } : book
+      )
+    );
   };
 
   return (
@@ -71,7 +108,13 @@ const LibraryPage = () => {
       <h1 className="text-3xl font-bold text-gray-800 mb-6">
         Library Management System
       </h1>
-      {error && <p className="text-red-500 mb-4">{error}</p>}
+
+      <Search
+        query={searchQuery}
+        onChange={setSearchQuery}
+        onSearch={handleSearch}
+      />
+
       <div className="mb-6 flex flex-wrap items-end gap-4">
         <div className="flex-grow">
           <input
@@ -103,38 +146,87 @@ const LibraryPage = () => {
             className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-        <button
-          onClick={editingId ? updateBook : addBook}
-          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-        >
-          {editingId ? "Update" : "Add"} Book
-        </button>
+      </div>
+      <button
+        onClick={editingId ? updateBook : addBook}
+        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+      >
+        {editingId ? "Update" : "Add"} Book
+      </button>
+
+      <div className="mt-4">
+        {searchResults.length > 0 &&
+          searchResults.map((result, index) => (
+            <p
+              key={index}
+              className={result.isAvailable ? "text-green-500" : "text-red-500"}
+            >
+              {result.title} is{" "}
+              {result.isAvailable ? "available" : "not available."}
+            </p>
+          ))}
       </div>
 
-      <div>
-        {books.map((book) => (
-          <div
-            key={book.id}
-            style={{
-              border: "1px solid #ccc",
-              padding: "10px",
-              marginBottom: "10px",
-            }}
-          >
-            <h3>{book.title}</h3>
-            <p>
-              by {book.author} ({book.year})
-            </p>
+      {filteredBooks.map((book) => (
+        <div
+          key={book.id}
+          style={{
+            border: "1px solid #ccc",
+            padding: "10px",
+            marginBottom: "10px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "15px",
+          }}
+        >
+          <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
+            <img
+              src={book.image}
+              alt={book.title}
+              style={{ width: "80px", height: "100px", objectFit: "cover" }}
+            />
+            <div>
+              <h3>{book.title}</h3>
+              <p>
+                by {book.author} ({book.year})
+              </p>
+              <p>{book.isBorrowed ? "Borrowed" : "Available"}</p>
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: "10px" }}>
+            {book.isBorrowed ? (
+              <button
+                onClick={() => returnBook(book.id)}
+                className="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none"
+              >
+                Return
+              </button>
+            ) : (
+              <button
+                onClick={() => borrowBook(book.id)}
+                className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none"
+              >
+                Borrow
+              </button>
+            )}
             <button
               onClick={() => startEditing(book)}
-              style={{ marginRight: "10px" }}
+              className="px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 focus:outline-none"
             >
               Edit
             </button>
-            <button onClick={() => deleteBook(book.id)}>Delete</button>
+            <button
+              onClick={() => deleteBook(book.id)}
+              className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none"
+            >
+              Delete
+            </button>
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
+      <Borrow books={books} setBooks={setBooks} />
+      <Return books={books} setBooks={setBooks} />
     </div>
   );
 };
