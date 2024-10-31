@@ -13,6 +13,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -31,11 +32,20 @@ const LoginPage = () => {
         email,
         password,
       });
-      console.log("Login successful", response.data);
-      window.location.href = "/library"; // Redirigir al dashboard
+      if (response.data && response.data.success) {
+        console.log("Login successful", response.data);
+        setMessage("Login successfully");
+        window.location.href = "/library"; // Redirigir
+      } else {
+        setError("Invalid email or password. Please try again.");
+      }
     } catch (error) {
-      console.error("Login error:", error);
-      setError("Invalid email or password. Please try again.");
+      if (error.response && error.response.status === 401) {
+        setError("Invalid email or password. Please try again.");
+      } else {
+        setError("Server error. Please try again later.");
+        console.error("Login error", error);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -147,12 +157,14 @@ const LoginPage = () => {
                 </Button>
               </div>
             </div>
+            {message && <p>{message}</p>}
           </form>
 
           <div className="mt-6 text-center">
             <Link
               to="/forgot-password"
-              className="text-sm text-blue-600 hover:text-blue-800 transition duration-200"
+              className="text-xl font-bold transition duration-200"
+              style={{ color: "#0934df" }}
             >
               Forgot your password?
             </Link>

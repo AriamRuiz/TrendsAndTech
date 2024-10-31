@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "../../css/Register.css";
+import { Link } from "react-router-dom";
 
 const Register = () => {
   // Estados para los campos del formulario
@@ -10,6 +11,7 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
 
   // Función para manejar el envío del formulario
   const handleSubmit = (e) => {
@@ -32,6 +34,7 @@ const Register = () => {
       })
       .then((response) => {
         console.log("Register success", response.data);
+        setMessage("Registration completed successfully");
       })
       .catch((error) => {
         console.error("Register error", error);
@@ -100,6 +103,17 @@ const Register = () => {
         </div>
         <button type="submit">Register</button>
       </form>
+      {message && <p>{message}</p>}
+      <hr className="my-4 border-gray-200" />
+      <div className="mt-6 text-center">
+        <Link
+          to="/LoginPage"
+          className="text-xl font-bold transition duration-200"
+          style={{ color: "#0934df" }}
+        >
+          LOGIN HERE
+        </Link>
+      </div>
     </div>
   );
 };

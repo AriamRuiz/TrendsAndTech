@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "../css/ForgotPassword.css";
+import { Link } from "react-router-dom";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -52,6 +53,16 @@ const ForgotPassword = () => {
         <button type="submit">Change Password</button>
       </form>
       {message && <p>{message}</p>}
+      <hr className="my-4 border-gray-200" />
+      <div className="mt-6 text-center">
+        <Link
+          to="/LoginPage"
+          className="text-xl font-bold transition duration-200"
+          style={{ color: "#0934df" }}
+        >
+          LOGIN HERE
+        </Link>
+      </div>
     </div>
   );
 };
