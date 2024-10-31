@@ -1,56 +1,56 @@
 .register-container {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-  }
-  
-  .register-container h2 {
-    text-align: center;
-  }
-  
-  .register-container div {
-    margin-bottom: 15px;
-  }
-  
-  .register-container label {
-    display: block;
-    font-weight: bold;
-  }
-  
-  .register-container input {
-    width: 100%;
-    padding: 8px;
-    box-sizing: border-box;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-  }
-  
-  .register-container button {
-    width: 100%;
-    padding: 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .register-container button:hover {
-    background-color: #0056b3;
-  }
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
 
-  button {
-    padding: 10px 15px;
-    margin-top: 20px;
-    background-color: #4CAF50; /* Color de fondo verde */
-    color: white; /* Texto blanco */
-    border: none; /* Sin borde */
-    border-radius: 5px; /* Bordes redondeados */
-    cursor: pointer; /* Cambia el cursor al pasar el ratón */
-  }
-  
-  button:hover {
-    background-color: #45a049; /* Color más oscuro al pasar el ratón */
-  }
+.register-container h2 {
+  text-align: center;
+}
+
+.register-container div {
+  margin-bottom: 15px;
+}
+
+.register-container label {
+  display: block;
+  font-weight: bold;
+}
+
+.register-container input {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.register-container button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.register-container button:hover {
+  background-color: #0056b3;
+}
+
+button {
+  padding: 10px 15px;
+  margin-top: 20px;
+  background-color: #4caf50; /* Color de fondo verde */
+  color: white; /* Texto blanco */
+  border: none; /* Sin borde */
+  border-radius: 5px; /* Bordes redondeados */
+  cursor: pointer; /* Cambia el cursor al pasar el ratón */
+}
+
+button:hover {
+  background-color: #45a049; /* Color más oscuro al pasar el ratón */
+}

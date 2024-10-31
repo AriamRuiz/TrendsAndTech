@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 export default function ListUser() {
-  const [users, setUsers] = useState({});
+  const [users, setUsers] = useState([]);
   useEffect(() => {
     getUsers();
   }, []);
