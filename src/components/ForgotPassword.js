@@ -18,7 +18,7 @@ const ForgotPassword = () => {
       });
       // Comprueba la respuesta de la API y muestra el mensaje adecuado
       if (response.data.status === 1) {
-        setMessage("Password updated successfully");
+        setMessage("Password successfully");
       } else {
         setMessage(response.data.message || "Failed to update password");
       }
