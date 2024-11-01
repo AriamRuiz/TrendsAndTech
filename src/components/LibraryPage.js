@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Search as SearchIcon } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
 const LibraryPage = () => {
   const [books, setBooks] = useState([
@@ -88,10 +89,17 @@ const LibraryPage = () => {
   });
   const [editingId, setEditingId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     handleSearch();
   }, [books, searchQuery, filter]);
+
+  // Función de logout
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // elimina el token
+    navigate("/loginPage"); // redirige al login
+  };
 
   // Input change handler
   const handleInputChange = (e) => {
@@ -166,6 +174,16 @@ const LibraryPage = () => {
         <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
           Library Management System
         </h1>
+
+        {/* Enlace para ir a login con la función de logout */}
+        <div className="text-right mb-4">
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-200"
+          >
+            Go to Login
+          </button>
+        </div>
 
         {/* Filter Buttons */}
         <div className="flex justify-center gap-4 mb-6">
