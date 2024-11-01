@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "../../css/Register.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const Register = () => {
-  // Estados para los campos del formulario
   const [userName, setUserName] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -13,107 +12,112 @@ const Register = () => {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  // Función para manejar el envío del formulario
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const navigate = useNavigate();
 
-    // Validación básica
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
     if (!userName || !email || !password) {
-      setError("Todos los campos son obligatorios");
+      setError("All fields are required");
       return;
     }
-    setError(""); // Limpiamos el mensaje de error si todos los campos están llenos
 
-    axios
-      .post("http://localhost/api/Register", {
+    try {
+      const response = await axios.post("http://localhost/api/Register", {
         userName,
         firstName,
         lastName,
         email,
         password,
-      })
-      .then((response) => {
-        console.log("Register success", response.data);
-        setMessage("Registration completed successfully");
-      })
-      .catch((error) => {
-        console.error("Register error", error);
-        setError("Error al registrar el usuario");
-        if (error.response && error.response.data) {
-          setError(error.response.data.message); // Mensaje específico del backend
-        } else {
-          setError("Error al registrar el usuario");
-        }
       });
+      setMessage("Registration completed successfully");
+      navigate("/LoginPage");
+    } catch (error) {
+      setError(error.response?.data?.message || "Error registering the user");
+    }
   };
 
   return (
-    <div className="register-container">
-      <h2>Register</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>User Name:</label>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-200 p-6">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md"
+      >
+        <h2 className="text-3xl font-bold text-center text-gray-800 mb-4">
+          Register
+        </h2>
+        <p className="text-sm text-gray-500 text-center mb-6">
+          Create an account to access the library
+        </p>
+
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"
+            placeholder="Username"
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
-            placeholder="Enter user Name"
             required
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
-        </div>
-        <div>
-          <label>First Name:</label>
           <input
             type="text"
+            placeholder="First Name"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
-            placeholder="Enter first name"
             required
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
-        </div>
-        <div>
-          <label>Last Name:</label>
           <input
             type="text"
+            placeholder="Last Name"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
-            placeholder="Enter last name"
             required
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
-        </div>
-        <div>
-          <label>Email:</label>
           <input
             type="email"
+            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter Email"
+            required
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
-        </div>
-        <div>
-          <label>Password:</label>
           <input
             type="password"
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter Password"
             required
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
+          <button
+            type="submit"
+            className="w-full py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-md hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+          >
+            Register
+          </button>
+        </form>
+
+        {message && (
+          <p className="text-green-500 text-center mt-4">{message}</p>
+        )}
+
+        <div className="text-center mt-6">
+          <span className="text-gray-500">Already have an account? </span>
+          <Link
+            to="/LoginPage"
+            className="text-blue-600 font-semibold hover:underline"
+          >
+            Log in here
+          </Link>
         </div>
-        <button type="submit">Register</button>
-      </form>
-      {message && <p>{message}</p>}
-      <hr className="my-4 border-gray-200" />
-      <div className="mt-6 text-center">
-        <Link
-          to="/LoginPage"
-          className="text-xl font-bold transition duration-200"
-          style={{ color: "#0934df" }}
-        >
-          LOGIN HERE
-        </Link>
-      </div>
+      </motion.div>
     </div>
   );
 };
