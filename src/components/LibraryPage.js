@@ -1,12 +1,67 @@
-import React, { useState } from "react";
-import Search from "./search"; // Assuming this component exists
-import Borrow from "./borrow/Borrow"; // Correct path for Borrow
-import Return from "./return/Return"; // Correct path for Return
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Search as SearchIcon } from "lucide-react";
 
 const LibraryPage = () => {
   const [books, setBooks] = useState([
     {
       id: 1,
+      title: "Harry Potter and the Philosopher's Stone",
+      author: "J.K. Rowling",
+      year: 1997,
+      image: "/images/HP1.jpg",
+      isBorrowed: false,
+    },
+    {
+      id: 2,
+      title: "Harry Potter and the Chamber of Secrets",
+      author: "J.K. Rowling",
+      year: 1998,
+      image: "/images/HP2.jpg",
+      isBorrowed: false,
+    },
+    {
+      id: 3,
+      title: "Harry Potter and the Prisoner of Azkaban",
+      author: "J.K. Rowling",
+      year: 1999,
+      image: "/images/HP3.jpg",
+      isBorrowed: false,
+    },
+    {
+      id: 4,
+      title: "Harry Potter and the Goblet of Fire",
+      author: "J.K. Rowling",
+      year: 2000,
+      image: "/images/HP4.jpg",
+      isBorrowed: false,
+    },
+    {
+      id: 5,
+      title: "Harry Potter and the Order of the Phoenix",
+      author: "J.K. Rowling",
+      year: 2003,
+      image: "/images/HP5.jpg",
+      isBorrowed: false,
+    },
+    {
+      id: 6,
+      title: "Harry Potter and the Half-Blood Prince",
+      author: "J.K. Rowling",
+      year: 2005,
+      image: "/images/HP6.jpg",
+      isBorrowed: false,
+    },
+    {
+      id: 7,
+      title: "Harry Potter and the Deathly Hallows",
+      author: "J.K. Rowling",
+      year: 2007,
+      image: "/images/HP7.jpg",
+      isBorrowed: false,
+    },
+    {
+      id: 8,
       title: "The Great Gatsby",
       author: "F. Scott Fitzgerald",
       year: 1925,
@@ -14,8 +69,8 @@ const LibraryPage = () => {
       isBorrowed: false,
     },
     {
-      id: 2,
-      title: "Absalom",
+      id: 9,
+      title: "Absalom, Absalom!",
       author: "William Faulkner",
       year: 1949,
       image: "/images/absalom.jpg",
@@ -23,6 +78,8 @@ const LibraryPage = () => {
     },
   ]);
 
+  const [filteredBooks, setFilteredBooks] = useState(books);
+  const [filter, setFilter] = useState("All");
   const [formData, setFormData] = useState({
     title: "",
     author: "",
@@ -31,30 +88,34 @@ const LibraryPage = () => {
   });
   const [editingId, setEditingId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredBooks, setFilteredBooks] = useState(books);
-  const [searchResults, setSearchResults] = useState([]); // New state for search results
 
+  useEffect(() => {
+    handleSearch();
+  }, [books, searchQuery, filter]);
+
+  // Input change handler
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const addBook = () => {
-    const newBook = { ...formData, id: Date.now(), isBorrowed: false };
-    setBooks([...books, newBook]);
+  // Add or update book
+  const handleAddOrUpdateBook = () => {
+    if (editingId) {
+      setBooks((prevBooks) =>
+        prevBooks.map((book) =>
+          book.id === editingId ? { ...book, ...formData } : book
+        )
+      );
+      setEditingId(null);
+    } else {
+      const newBook = { ...formData, id: Date.now(), isBorrowed: false };
+      setBooks([...books, newBook]);
+    }
     setFormData({ title: "", author: "", year: "", image: "" });
   };
 
-  const updateBook = () => {
-    setBooks((prevBooks) =>
-      prevBooks.map((book) =>
-        book.id === editingId ? { ...formData, id: editingId } : book
-      )
-    );
-    setFormData({ title: "", author: "", year: "", image: "" });
-    setEditingId(null);
-  };
-
+  // Start editing a book
   const startEditing = (book) => {
     setEditingId(book.id);
     setFormData({
@@ -65,78 +126,99 @@ const LibraryPage = () => {
     });
   };
 
+  // Delete book
   const deleteBook = (id) => {
     setBooks(books.filter((book) => book.id !== id));
   };
 
-  const handleSearch = () => {
-    if (searchQuery) {
-      const results = books.filter((book) =>
-        book.title.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setFilteredBooks(results);
-      // Set search results with availability status
-      setSearchResults(
-        results.map((book) => ({
-          title: book.title,
-          isAvailable: !book.isBorrowed,
-        }))
-      );
-    } else {
-      setFilteredBooks(books);
-      setSearchResults([]); // Clear results if no query
-    }
-  };
-  const returnBook = (id) => {
+  // Toggle borrowing status
+  const toggleBorrowStatus = (id) => {
     setBooks(
       books.map((book) =>
-        book.id === id ? { ...book, isBorrowed: false } : book
+        book.id === id ? { ...book, isBorrowed: !book.isBorrowed } : book
       )
     );
   };
 
-  const borrowBook = (id) => {
-    setBooks(
-      books.map((book) =>
-        book.id === id ? { ...book, isBorrowed: true } : book
-      )
-    );
+  // Search and filter books
+  const handleSearch = () => {
+    const results = books.filter((book) => {
+      const matchesSearch = book.title
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const matchesFilter =
+        filter === "All" ||
+        (filter === "Available" && !book.isBorrowed) ||
+        (filter === "Borrowed" && book.isBorrowed);
+      return matchesSearch && matchesFilter;
+    });
+    setFilteredBooks(results);
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">
-        Library Management System
-      </h1>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-200 p-6">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="bg-white rounded-lg shadow-lg p-8 w-full max-w-3xl"
+      >
+        <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+          Library Management System
+        </h1>
 
-      <Search
-        query={searchQuery}
-        onChange={setSearchQuery}
-        onSearch={handleSearch}
-      />
+        {/* Filter Buttons */}
+        <div className="flex justify-center gap-4 mb-6">
+          {["All", "Available", "Borrowed"].map((option) => (
+            <button
+              key={option}
+              onClick={() => setFilter(option)}
+              className={`px-3 py-1 rounded-md font-semibold text-sm focus:outline-none transition-colors duration-200 ${
+                filter === option
+                  ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              {option}
+            </button>
+          ))}
+        </div>
 
-      <div className="mb-6 flex flex-wrap items-end gap-4">
-        <div className="flex-grow">
+        {/* Updated Search Bar */}
+        <div className="relative mb-6">
+          <input
+            type="text"
+            placeholder="Search for a book..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full px-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            onClick={handleSearch}
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+          >
+            <SearchIcon className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Form for adding/editing books */}
+        <div className="mb-6 flex flex-wrap gap-4">
           <input
             type="text"
             placeholder="Book Title"
             name="title"
             value={formData.title}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-        </div>
-        <div className="flex-grow">
           <input
             type="text"
             placeholder="Author"
             name="author"
             value={formData.author}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-        </div>
-        <div>
           <input
             type="number"
             placeholder="Year"
@@ -145,88 +227,75 @@ const LibraryPage = () => {
             onChange={handleInputChange}
             className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          <input
+            type="text"
+            placeholder="Image URL"
+            name="image"
+            value={formData.image}
+            onChange={handleInputChange}
+            className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
         </div>
-      </div>
-      <button
-        onClick={editingId ? updateBook : addBook}
-        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-      >
-        {editingId ? "Update" : "Add"} Book
-      </button>
-
-      <div className="mt-4">
-        {searchResults.length > 0 &&
-          searchResults.map((result, index) => (
-            <p
-              key={index}
-              className={result.isAvailable ? "text-green-500" : "text-red-500"}
-            >
-              {result.title} is{" "}
-              {result.isAvailable ? "available" : "not available."}
-            </p>
-          ))}
-      </div>
-
-      {filteredBooks.map((book) => (
-        <div
-          key={book.id}
-          style={{
-            border: "1px solid #ccc",
-            padding: "10px",
-            marginBottom: "10px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "15px",
-          }}
+        <button
+          onClick={handleAddOrUpdateBook}
+          className="w-full py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-md hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 mb-6"
         >
-          <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
-            <img
-              src={book.image}
-              alt={book.title}
-              style={{ width: "80px", height: "100px", objectFit: "cover" }}
-            />
-            <div>
-              <h3>{book.title}</h3>
-              <p>
-                by {book.author} ({book.year})
-              </p>
-              <p>{book.isBorrowed ? "Borrowed" : "Available"}</p>
+          {editingId ? "Update" : "Add"} Book
+        </button>
+
+        {/* Book list with borrow, edit, and delete options */}
+        {filteredBooks.map((book) => (
+          <div
+            key={book.id}
+            className="flex items-center justify-between border border-gray-300 p-4 rounded-md mb-4"
+          >
+            <div className="flex items-center gap-4">
+              <img
+                src={book.image}
+                alt={book.title}
+                className="w-20 h-24 object-cover rounded-md"
+              />
+              <div>
+                <h3 className="text-lg font-semibold">{book.title}</h3>
+                <p className="text-gray-600">
+                  by {book.author} ({book.year})
+                </p>
+                <p
+                  className={
+                    book.isBorrowed ? "text-red-500" : "text-green-500"
+                  }
+                >
+                  {book.isBorrowed ? "Borrowed" : "Available"}
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => toggleBorrowStatus(book.id)}
+                className={`px-3 py-2 rounded-md text-white transition duration-200 focus:outline-none ${
+                  book.isBorrowed
+                    ? "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+                    : "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
+                }`}
+              >
+                {book.isBorrowed ? "Return" : "Borrow"}
+              </button>
+              <button
+                onClick={() => startEditing(book)}
+                className="px-3 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white rounded-md focus:outline-none transition duration-200"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => deleteBook(book.id)}
+                className="px-3 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-md focus:outline-none transition duration-200"
+              >
+                Delete
+              </button>
             </div>
           </div>
-          <div style={{ display: "flex", gap: "10px" }}>
-            {book.isBorrowed ? (
-              <button
-                onClick={() => returnBook(book.id)}
-                className="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none"
-              >
-                Return
-              </button>
-            ) : (
-              <button
-                onClick={() => borrowBook(book.id)}
-                className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none"
-              >
-                Borrow
-              </button>
-            )}
-            <button
-              onClick={() => startEditing(book)}
-              className="px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 focus:outline-none"
-            >
-              Edit
-            </button>
-            <button
-              onClick={() => deleteBook(book.id)}
-              className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none"
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      ))}
-      <Borrow books={books} setBooks={setBooks} />
-      <Return books={books} setBooks={setBooks} />
+        ))}
+      </motion.div>
     </div>
   );
 };
