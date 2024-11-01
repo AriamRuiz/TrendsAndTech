@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "../css/ForgotPassword.css";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -16,9 +16,8 @@ const ForgotPassword = () => {
         email,
         newPassword,
       });
-      // Comprueba la respuesta de la API y muestra el mensaje adecuado
       if (response.data.status === 1) {
-        setMessage("Password successfully");
+        setMessage("Password updated successfully");
       } else {
         setMessage(response.data.message || "Failed to update password");
       }
@@ -29,40 +28,64 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="forgot-password">
-      <h2>Forgot Password</h2>
-      <form onSubmit={handleChangePassword}>
-        <div>
-          <label>Email:</label>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-200 p-6">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md"
+      >
+        <h2 className="text-3xl font-bold text-center text-gray-800 mb-4">
+          Forgot Password
+        </h2>
+        <p className="text-sm text-gray-500 text-center mb-6">
+          Enter your email and new password to reset your account
+        </p>
+
+        {message && (
+          <p
+            className={`text-center mb-4 ${
+              message.includes("success") ? "text-green-500" : "text-red-500"
+            }`}
+          >
+            {message}
+          </p>
+        )}
+
+        <form onSubmit={handleChangePassword} className="space-y-4">
           <input
             type="email"
+            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
-        </div>
-        <div>
-          <label>New Password:</label>
           <input
             type="password"
+            placeholder="New Password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             required
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
+          <button
+            type="submit"
+            className="w-full py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-md hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+          >
+            Change Password
+          </button>
+        </form>
+
+        <div className="text-center mt-6">
+          <Link
+            to="/LoginPage"
+            className="text-blue-600 font-semibold hover:underline"
+          >
+            Log in here
+          </Link>
         </div>
-        <button type="submit">Change Password</button>
-      </form>
-      {message && <p>{message}</p>}
-      <hr className="my-4 border-gray-200" />
-      <div className="mt-6 text-center">
-        <Link
-          to="/LoginPage"
-          className="text-xl font-bold transition duration-200"
-          style={{ color: "#0934df" }}
-        >
-          LOGIN HERE
-        </Link>
-      </div>
+      </motion.div>
     </div>
   );
 };
